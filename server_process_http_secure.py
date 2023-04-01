@@ -31,12 +31,12 @@ class ProcessTheClient(multiprocessing.Process):
                     rcv = rcv+d
                     if rcv[-2:] == '\r\n':
                         # end of command, proses string
-                        logging.warning("data dari client: {}" . format(rcv))
+                        # logging.warning("data dari client: {}" . format(rcv))
                         hasil = httpserver.proses(rcv)
                         # hasil akan berupa bytes
                         # untuk bisa ditambahi dengan string, maka string harus di encode
                         hasil = hasil+"\r\n\r\n".encode()
-                        logging.warning("balas ke  client: {}" . format(hasil))
+                        # logging.warning("balas ke  client: {}" . format(hasil))
                         # hasil sudah dalam bentuk bytes
                         self.connection.sendall(hasil)
                         rcv = ""
@@ -65,13 +65,16 @@ class Server(multiprocessing.Process):
     def run(self):
         self.my_socket.bind(('0.0.0.0', 8443))
         self.my_socket.listen(1)
+        num = 1
         while True:
             self.connection, self.client_address = self.my_socket.accept()
+            num += 1
+            print(num)
             try:
                 self.secure_connection = self.context.wrap_socket(
                     self.connection, server_side=True)
-                logging.warning(
-                    "connection from {}".format(self.client_address))
+                # logging.warning(
+                    # "connection from {}".format(self.client_address))
                 clt = ProcessTheClient(
                     self.secure_connection, self.client_address)
                 clt.start()
